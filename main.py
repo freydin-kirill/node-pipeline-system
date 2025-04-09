@@ -4,20 +4,17 @@ from observers import LoggerObserver, CascadeObserver
 
 
 if __name__ == '__main__':
-    root = Node("root")
-    child1 = Node("child1")
-    child2 = Node("child2")
-
-    root.add_child(child1)
-    root.add_child(child2)
-
     logger = LoggerObserver()
     cascade = CascadeObserver()
 
+    root = Node("root")
+    child1 = Node("child1")
+    child2 = Node("child2")
+    child3 = Node("child3", NodeStatus.Running)
+
+    root.children = [child1, child2, child3]
     root.add_subscriber(logger)
     root.add_subscriber(cascade)
 
-    child1.add_subscriber(logger)
-    child2.add_subscriber(logger)
-
     root.status = NodeStatus.Running
+    root.status = NodeStatus.Failed

@@ -38,17 +38,20 @@ class BaseNode(ABC):
     def children(self, children: 'BaseNode'):
         self._children = children
 
-    def add_child(self, child: 'BaseNode'):
-        self._children.append(child)
-
-    def remove_child(self, child: 'BaseNode'):
-        self._children.remove(child)
+    @property
+    def subscribers(self) -> List[BaseObserver]:
+        return self._subscribers
 
     def add_subscriber(self, subscriber: BaseObserver):
         self._subscribers.append(subscriber)
+        for child in self._children:
+            if subscriber not in child.subscribers:
+                child.add_subscriber(subscriber)
 
     def remove_subscriber(self, subscriber: BaseObserver):
         self._subscribers.remove(subscriber)
+        for child in self._children:
+            child.remove_subscriber(subscriber)
 
     def notify_subscribers(self):
         for subscriber in self._subscribers:
