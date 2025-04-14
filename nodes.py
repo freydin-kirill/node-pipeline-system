@@ -2,15 +2,28 @@ from abc import ABC
 from typing import List, Optional
 
 from node_status import NodeStatus
-from observers import BaseObserver
+from observers import IObserver
 
 
-class BaseNode(ABC):
-    def __init__(self, name: str, status: Optional[NodeStatus] = None, children: Optional[List['BaseNode']] = None):
+class INode(ABC):
+    def add_subscriber(self, subscriber: IObserver):
+        pass
+
+    def remove_subscriber(self, subscriber: IObserver):
+        pass
+
+    def notify_subscribers(self):
+        pass
+
+
+class BaseNode(INode):
+    def __init__(self, name: str,
+                 status: Optional[NodeStatus] = None,
+                 children: Optional[List[INode]] = None):
         self._name = name
         self._status = status if status is not None else NodeStatus.Pending
         self._children = children if children is not None else []
-        self._subscribers: List[BaseObserver] = []
+        self._subscribers: List[IObserver] = []
 
     @property
     def name(self) -> str:
@@ -31,24 +44,25 @@ class BaseNode(ABC):
             self.notify_subscribers()
 
     @property
-    def children(self) -> List['BaseNode']:
+    def children(self) -> List[INode]:
         return self._children
 
     @children.setter
-    def children(self, children: 'BaseNode'):
+    def children(self, children: INode):
         self._children = children
 
     @property
-    def subscribers(self) -> List[BaseObserver]:
+    def subscribers(self) -> List[IObserver]:
         return self._subscribers
 
-    def add_subscriber(self, subscriber: BaseObserver):
+    def add_subscriber(self, subscriber: IObserver):
         self._subscribers.append(subscriber)
         for child in self._children:
+            child: BaseNode
             if subscriber not in child.subscribers:
                 child.add_subscriber(subscriber)
 
-    def remove_subscriber(self, subscriber: BaseObserver):
+    def remove_subscriber(self, subscriber: IObserver):
         self._subscribers.remove(subscriber)
         for child in self._children:
             child.remove_subscriber(subscriber)
