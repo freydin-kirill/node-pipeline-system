@@ -1,4 +1,4 @@
-from nodes import Node
+from nodes import BaseNode as Node
 from node_status import NodeStatus
 from observers import LoggerObserver, CascadeObserver
 

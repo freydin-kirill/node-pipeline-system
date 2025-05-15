@@ -6,18 +6,22 @@ from observers import IObserver
 
 
 class INode(ABC):
+    @abstractmethod
     def add_subscriber(self, subscriber: IObserver):
         pass
 
+    @abstractmethod
     def remove_subscriber(self, subscriber: IObserver):
         pass
 
+    @abstractmethod
     def notify_subscribers(self):
         pass
 
 
 class BaseNode(INode):
-    def __init__(self, name: str,
+    def __init__(self,
+                 name: str,
                  status: Optional[NodeStatus] = None,
                  children: Optional[List[INode]] = None):
         self._name = name
@@ -71,6 +75,3 @@ class BaseNode(INode):
         for subscriber in self._subscribers:
             subscriber.update(self)
 
-
-class Node(BaseNode):
-    pass
